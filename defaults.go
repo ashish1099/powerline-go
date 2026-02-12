@@ -558,6 +558,10 @@ var defaults = Config{
 			ViModeCommandBg: 250,
 			ViModeInsertFg:  22,
 			ViModeInsertBg:  70,
+
+			TimeregFg:     15,
+			TimeregBg:     33,
+			TimeregIdleBg: 208,
 		},
 		"low-contrast": {
 			Reset: 0xFF,

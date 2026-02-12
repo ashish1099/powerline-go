@@ -112,6 +112,7 @@ var modules = map[string]func(*powerline) []pwl.Segment{
 	"vi-mode":             segmentViMode,
 	"wsl":                 segmentWSL,
 	"nix-shell":           segmentNixShell,
+	"timereg":             segmentTimereg,
 }
 
 func comments(lines ...string) string {
