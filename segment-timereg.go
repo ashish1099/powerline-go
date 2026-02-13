@@ -11,11 +11,16 @@ import (
 	pwl "github.com/justjanne/powerline-go/powerline"
 )
 
+type timeregStatus struct {
+	Active *timeregState  `json:"active"`
+	Paused []timeregState `json:"paused"`
+}
+
 type timeregState struct {
-	Issue     int           `json:"issue"`
-	Repo      string        `json:"repo"`
-	StartedAt time.Time     `json:"started_at"`
-	Breaks    []timeregBreak `json:"breaks,omitempty"`
+	Issue     int             `json:"issue"`
+	Repo      string          `json:"repo"`
+	StartedAt time.Time       `json:"started_at"`
+	Breaks    []timeregBreak  `json:"breaks,omitempty"`
 	Pending   *timeregPending `json:"pending_break,omitempty"`
 }
 
@@ -35,17 +40,22 @@ func segmentTimereg(p *powerline) []pwl.Segment {
 		return []pwl.Segment{}
 	}
 
-	var state timeregState
+	var state timeregStatus
 	if err := json.Unmarshal(data, &state); err != nil {
 		return []pwl.Segment{}
 	}
 
-	elapsed := timeregElapsed(&state)
-	repo := strings.TrimPrefix(state.Repo, "gitea-")
-	content := fmt.Sprintf("#%d %s | %s", state.Issue, repo, timeregFormatDuration(elapsed))
+	activeState := state.Active
+	if activeState == nil {
+		return []pwl.Segment{}
+	}
+
+	elapsed := timeregElapsed(activeState)
+	repo := strings.TrimPrefix(activeState.Repo, "gitea-")
+	content := fmt.Sprintf("#%d %s | %s", activeState.Issue, repo, timeregFormatDuration(elapsed))
 
 	bg := p.theme.TimeregBg
-	if state.Pending != nil {
+	if activeState.Pending != nil {
 		bg = p.theme.TimeregIdleBg
 	}
 
